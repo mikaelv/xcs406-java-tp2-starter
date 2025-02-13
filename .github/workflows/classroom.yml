@@ -1,0 +1,33 @@
+name: GitHub Classroom Workflow
+
+on: [push]
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  build:
+    name: Autograding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+          
+      - name: Build and Generate autograding.json
+        run: mkdir -p .github/classroom && ./gradlew generateAutogradingJson
+
+      - name: Check autograding.json
+        run: ls -la .github/classroom/
+        
+      - name: Autograding
+        uses: education/autograding@v1
